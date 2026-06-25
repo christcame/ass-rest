@@ -20,8 +20,8 @@ export default function Home() {
         <h3 style={{ marginTop: 32 }}>Endpoint</h3>
         <ul style={{ listStyle: "none", padding: 0 }}>
           <li>
-            <code>GET /api/ass</code> — streams animated ASCII buns and a
-            loading bar (2 min)
+            <code>GET /api/ass</code> — streams bouncing buns, a rich-text
+            loading bar, and random status messages every 15s (2 min)
           </li>
         </ul>
 
