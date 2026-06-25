@@ -71,11 +71,12 @@ function fart() {
 }
 
 export async function GET() {
-  return new NextResponse(fart(), {
+  const body = new Uint8Array(fart());
+  return new NextResponse(body, {
     status: 200,
     headers: {
       "content-type": "audio/wav",
-      "content-length": String(fart().length),
+      "content-length": String(body.byteLength),
       "cache-control": "public, max-age=86400",
     },
   });
