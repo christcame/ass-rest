@@ -8,6 +8,7 @@ import * as THREE from "three";
 const PEACH = "#ffc4a8";
 const PEACH_GLOW = "#ff8a65";
 const PEACH_DEEP = "#e8917a";
+const PINK_CENTER = "#f48fb1";
 
 function Cheek({
   position,
@@ -65,6 +66,10 @@ function Cheek({
           opacity={0.35}
         />
       </mesh>
+      <mesh position={[0, 0, 0.68]}>
+        <circleGeometry args={[0.14, 32]} />
+        <meshBasicMaterial color={PINK_CENTER} />
+      </mesh>
     </group>
   );
 }
@@ -73,8 +78,8 @@ function BouncingButtocks() {
   return (
     <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.35}>
       <group position={[0, -0.15, 0]}>
-        <Cheek position={[-0.82, 0, 0]} phase={0} scale={1} />
-        <Cheek position={[0.82, 0, 0]} phase={Math.PI * 0.55} scale={1.02} />
+        <Cheek position={[-0.52, 0, 0]} phase={0} scale={1} />
+        <Cheek position={[0.52, 0, 0]} phase={Math.PI * 0.55} scale={1.02} />
         <mesh position={[0, -0.55, 0.15]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
           <planeGeometry args={[3.6, 2.2]} />
           <shadowMaterial transparent opacity={0.22} />
