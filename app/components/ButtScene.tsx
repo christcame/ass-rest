@@ -8,8 +8,47 @@ import * as THREE from "three";
 const PEACH = "#ffc4a8";
 const PEACH_GLOW = "#ff8a65";
 const PEACH_DEEP = "#e8917a";
-const PINK_CENTER = "#ff1493";
-const PINK_CENTER_GLOW = "#ff69b4";
+const PINK_THONG = "#ff3d9a";
+const PINK_THONG_GLOW = "#ff69b4";
+
+function thongFabric() {
+  return (
+    <meshStandardMaterial
+      color={PINK_THONG}
+      emissive={PINK_THONG_GLOW}
+      emissiveIntensity={0.28}
+      roughness={0.32}
+      metalness={0.04}
+    />
+  );
+}
+
+function PinkThong() {
+  return (
+    <group>
+      <mesh position={[0, 0.44, 0.6]} castShadow receiveShadow>
+        <boxGeometry args={[1.08, 0.075, 0.05]} />
+        {thongFabric()}
+      </mesh>
+      <mesh position={[0, 0.14, 0.7]} rotation={[0.22, 0, 0]} castShadow receiveShadow>
+        <boxGeometry args={[0.24, 0.2, 0.035]} />
+        {thongFabric()}
+      </mesh>
+      <mesh position={[0, 0.04, 0.46]} castShadow receiveShadow>
+        <boxGeometry args={[0.038, 0.68, 0.045]} />
+        {thongFabric()}
+      </mesh>
+      <mesh position={[-0.5, 0.3, 0.54]} rotation={[0.1, 0.15, 0.42]} castShadow receiveShadow>
+        <boxGeometry args={[0.032, 0.3, 0.032]} />
+        {thongFabric()}
+      </mesh>
+      <mesh position={[0.5, 0.3, 0.54]} rotation={[0.1, -0.15, -0.42]} castShadow receiveShadow>
+        <boxGeometry args={[0.032, 0.3, 0.032]} />
+        {thongFabric()}
+      </mesh>
+    </group>
+  );
+}
 
 function createCrosshatchMaps() {
   const size = 512;
@@ -137,22 +176,6 @@ function Cheek({
           opacity={0.35}
         />
       </mesh>
-      <mesh position={[0, 0, 0.74]} renderOrder={10}>
-        <circleGeometry args={[0.22, 48]} />
-        <meshStandardMaterial
-          color={PINK_CENTER}
-          emissive={PINK_CENTER_GLOW}
-          emissiveIntensity={1.1}
-          roughness={0.25}
-          metalness={0}
-          polygonOffset
-          polygonOffsetFactor={-2}
-        />
-      </mesh>
-      <mesh position={[0, 0, 0.76]} renderOrder={11}>
-        <ringGeometry args={[0.08, 0.11, 32]} />
-        <meshBasicMaterial color="#ffffff" transparent opacity={0.45} />
-      </mesh>
     </group>
   );
 }
@@ -181,6 +204,7 @@ function BouncingButtocks() {
           <>
             <Cheek position={[-0.52, 0, 0]} scale={1} colorMap={maps.colorMap} bumpMap={maps.bumpMap} />
             <Cheek position={[0.52, 0, 0]} scale={1} colorMap={maps.colorMap} bumpMap={maps.bumpMap} />
+            <PinkThong />
           </>
         )}
         <mesh position={[0, -0.55, 0.15]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
