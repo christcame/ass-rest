@@ -60,39 +60,60 @@ function bounceOffset(elapsed: number, phase: number): number {
   );
 }
 
-// Jiggle variants for the cheek shape
+const MIRROR_CHARS: Record<string, string> = {
+  "(": ")",
+  ")": "(",
+  "[": "]",
+  "]": "[",
+  "{": "}",
+  "}": "{",
+  "/": "\\",
+  "\\": "/",
+  "<": ">",
+  ">": "<",
+};
+
+function mirrorCheek(line: string): string {
+  return line
+    .split("")
+    .reverse()
+    .map((ch) => MIRROR_CHARS[ch] ?? ch)
+    .join("");
+}
+
+// Jiggle variants — left cheek art; mirrored on the right for a center cleft.
 const CHEEK_VARIANTS = [
-  // 0 — normal
+  // 0 — plump resting
   [
-    "    ( . )",
-    "   (  '  )",
-    "  (  (_)  )",
-    "   (     )",
-    "    ' _ '",
+    "      .--'      ",
+    "     /     \\    ",
+    "    |      |    ",
+    "    |      |    ",
+    "     \\____/     ",
   ],
-  // 1 — squeeze
+  // 1 — clench
   [
-    "     (.) ",
-    "    ( ' )",
-    "   ( (_) )",
-    "    (   )",
-    "     '_' ",
+    "       .-'      ",
+    "      /   \\    ",
+    "     |     |    ",
+    "     |     |    ",
+    "      \\___/     ",
   ],
-  // 2 — wide
+  // 2 — spread
   [
-    "   (  .  )",
-    "  (   '   )",
-    " (   (_)   )",
-    "  (       )",
-    "   ' _ _ '",
+    "     .----'     ",
+    "    /       \\   ",
+    "   |         |  ",
+    "   |         |  ",
+    "    \\_______/   ",
   ],
   // 3 — wobble
   [
-    "    ( .)",
-    "   (  ' )",
-    "  (  (_) )",
-    "   (    )",
-    "    ' _' ",
+    "      .--'      ",
+    "     /     \\    ",
+    "    |  ~~   |   ",
+    "     \\     /    ",
+    "      \\___/     ",
   ],
 ];
 
@@ -108,8 +129,7 @@ function renderBouncingButts(elapsed: number, frameIdx: number): string[] {
 
   const cheekWidth = 20;
 
-  const leftVariant = CHEEK_VARIANTS[frameIdx % CHEEK_VARIANTS.length];
-  const rightVariant = CHEEK_VARIANTS[(frameIdx + 2) % CHEEK_VARIANTS.length];
+  const variant = CHEEK_VARIANTS[frameIdx % CHEEK_VARIANTS.length];
 
   // Each cheek is placed so its bottom row sits at (CANVAS_HEIGHT - 1 - bounce).
   // topRow is the canvas row where line 0 of the cheek art lands.
@@ -124,12 +144,12 @@ function renderBouncingButts(elapsed: number, frameIdx: number): string[] {
 
     const leftStr =
       lIdx >= 0 && lIdx < CHEEK_HEIGHT
-        ? leftVariant[lIdx].padEnd(cheekWidth)
+        ? variant[lIdx].padEnd(cheekWidth)
         : " ".repeat(cheekWidth);
 
     const rightStr =
       rIdx >= 0 && rIdx < CHEEK_HEIGHT
-        ? rightVariant[rIdx]
+        ? mirrorCheek(variant[rIdx]).padEnd(cheekWidth)
         : "";
 
     lines.push(leftStr + rightStr);
