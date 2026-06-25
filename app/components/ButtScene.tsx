@@ -1,56 +1,127 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { MeshDistortMaterial, Sparkles, Float } from "@react-three/drei";
+import { MeshDistortMaterial, Sparkles, Float, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 
 const PEACH = "#ffc4a8";
 const PEACH_GLOW = "#ff8a65";
 const PEACH_DEEP = "#e8917a";
-const PINK_CENTER = "#f48fb1";
+const PINK_CENTER = "#ff1493";
+const PINK_CENTER_GLOW = "#ff69b4";
+
+function createCrosshatchMaps() {
+  const size = 512;
+  const spacing = 14;
+
+  const colorCanvas = document.createElement("canvas");
+  colorCanvas.width = size;
+  colorCanvas.height = size;
+  const colorCtx = colorCanvas.getContext("2d")!;
+
+  colorCtx.fillStyle = PEACH;
+  colorCtx.fillRect(0, 0, size, size);
+
+  const drawDiagonalLines = (
+    ctx: CanvasRenderingContext2D,
+    stroke: string,
+    width: number,
+    flip = false,
+  ) => {
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = width;
+    for (let i = -size; i < size * 2; i += spacing) {
+      ctx.beginPath();
+      if (flip) {
+        ctx.moveTo(i, size);
+        ctx.lineTo(i + size, 0);
+      } else {
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i + size, size);
+      }
+      ctx.stroke();
+    }
+  };
+
+  drawDiagonalLines(colorCtx, "rgba(196, 118, 88, 0.28)", 1.4);
+  drawDiagonalLines(colorCtx, "rgba(176, 102, 78, 0.2)", 1.1, true);
+
+  const bumpCanvas = document.createElement("canvas");
+  bumpCanvas.width = size;
+  bumpCanvas.height = size;
+  const bumpCtx = bumpCanvas.getContext("2d")!;
+
+  bumpCtx.fillStyle = "#808080";
+  bumpCtx.fillRect(0, 0, size, size);
+  drawDiagonalLines(bumpCtx, "#5a4038", 1.6);
+  drawDiagonalLines(bumpCtx, "#4a342e", 1.2, true);
+
+  const configure = (texture: THREE.CanvasTexture) => {
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(5, 5);
+    texture.anisotropy = 8;
+    return texture;
+  };
+
+  return {
+    colorMap: configure(new THREE.CanvasTexture(colorCanvas)),
+    bumpMap: configure(new THREE.CanvasTexture(bumpCanvas)),
+  };
+}
+
+function useCrosshatchMaps() {
+  const [maps, setMaps] = useState<ReturnType<typeof createCrosshatchMaps> | null>(null);
+
+  useEffect(() => {
+    const created = createCrosshatchMaps();
+    setMaps(created);
+    return () => {
+      created.colorMap.dispose();
+      created.bumpMap.dispose();
+    };
+  }, []);
+
+  return maps;
+}
 
 function Cheek({
   position,
-  phase,
   scale = 1,
+  colorMap,
+  bumpMap,
 }: {
   position: [number, number, number];
-  phase: number;
   scale?: number;
+  colorMap: THREE.Texture;
+  bumpMap: THREE.Texture;
 }) {
-  const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
-    const bounce = ((1 - Math.cos((t + phase) * 5)) / 2) * 0.55;
-    const wobbleX = Math.sin(t * 3.2 + phase) * 0.06;
-    const wobbleZ = Math.cos(t * 2.8 + phase) * 0.05;
-
-    if (groupRef.current) {
-      groupRef.current.position.y = position[1] + bounce;
-      groupRef.current.rotation.z = wobbleX;
-      groupRef.current.rotation.x = wobbleZ;
-    }
     if (meshRef.current) {
-      const squash = 1 + Math.sin(t * 6 + phase) * 0.07;
+      const squash = 1 + Math.sin(t * 6) * 0.05;
       meshRef.current.scale.set(scale * squash, scale * (1.05 - squash * 0.08), scale * 1.02);
     }
   });
 
   return (
-    <group ref={groupRef} position={position}>
+    <group position={position}>
       <mesh ref={meshRef} castShadow receiveShadow scale={[1.15, 1.05, 0.92]}>
         <sphereGeometry args={[0.72, 64, 64]} />
         <MeshDistortMaterial
           color={PEACH}
+          map={colorMap}
+          bumpMap={bumpMap}
+          bumpScale={0.035}
           emissive={PEACH_GLOW}
-          emissiveIntensity={0.42}
-          roughness={0.38}
-          metalness={0.08}
-          clearcoat={0.6}
-          clearcoatRoughness={0.25}
+          emissiveIntensity={0.38}
+          roughness={0.48}
+          metalness={0.05}
+          clearcoat={0.45}
+          clearcoatRoughness={0.35}
           distort={0.28}
           speed={3.2}
         />
@@ -66,23 +137,55 @@ function Cheek({
           opacity={0.35}
         />
       </mesh>
-      <mesh position={[0, 0, 0.68]}>
-        <circleGeometry args={[0.14, 32]} />
-        <meshBasicMaterial color={PINK_CENTER} />
+      <mesh position={[0, 0, 0.74]} renderOrder={10}>
+        <circleGeometry args={[0.22, 48]} />
+        <meshStandardMaterial
+          color={PINK_CENTER}
+          emissive={PINK_CENTER_GLOW}
+          emissiveIntensity={1.1}
+          roughness={0.25}
+          metalness={0}
+          polygonOffset
+          polygonOffsetFactor={-2}
+        />
+      </mesh>
+      <mesh position={[0, 0, 0.76]} renderOrder={11}>
+        <ringGeometry args={[0.08, 0.11, 32]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.45} />
       </mesh>
     </group>
   );
 }
 
 function BouncingButtocks() {
+  const groupRef = useRef<THREE.Group>(null);
+  const maps = useCrosshatchMaps();
+
+  useFrame((state) => {
+    const t = state.clock.elapsedTime;
+    const bounce = ((1 - Math.cos(t * 5)) / 2) * 0.72;
+    const wobbleX = Math.sin(t * 3.2) * 0.04;
+    const wobbleZ = Math.cos(t * 2.8) * 0.03;
+
+    if (groupRef.current) {
+      groupRef.current.position.y = -0.15 + bounce;
+      groupRef.current.rotation.z = wobbleX;
+      groupRef.current.rotation.x = wobbleZ;
+    }
+  });
+
   return (
     <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.35}>
-      <group position={[0, -0.15, 0]}>
-        <Cheek position={[-0.52, 0, 0]} phase={0} scale={1} />
-        <Cheek position={[0.52, 0, 0]} phase={Math.PI * 0.55} scale={1.02} />
+      <group ref={groupRef}>
+        {maps && (
+          <>
+            <Cheek position={[-0.52, 0, 0]} scale={1} colorMap={maps.colorMap} bumpMap={maps.bumpMap} />
+            <Cheek position={[0.52, 0, 0]} scale={1} colorMap={maps.colorMap} bumpMap={maps.bumpMap} />
+          </>
+        )}
         <mesh position={[0, -0.55, 0.15]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
           <planeGeometry args={[3.6, 2.2]} />
-          <shadowMaterial transparent opacity={0.22} />
+          <shadowMaterial transparent opacity={0.35} />
         </mesh>
       </group>
     </Float>
@@ -172,17 +275,27 @@ function Lights() {
 
   return (
     <>
-      <ambientLight intensity={0.35} color="#ffe0d0" />
+      <ambientLight intensity={0.28} color="#ffe0d0" />
+      <hemisphereLight intensity={0.22} color="#fff0e8" groundColor="#1a0810" />
       <directionalLight
-        position={[4, 6, 5]}
-        intensity={1.1}
-        color="#fff5ee"
+        position={[3.5, 7, 4.5]}
+        intensity={1.35}
+        color="#fff8f2"
         castShadow
-        shadow-mapSize={[1024, 1024]}
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-left={-3.5}
+        shadow-camera-right={3.5}
+        shadow-camera-top={3.5}
+        shadow-camera-bottom={-3.5}
+        shadow-camera-near={0.5}
+        shadow-camera-far={18}
+        shadow-bias={-0.00015}
+        shadow-normalBias={0.025}
       />
-      <pointLight ref={peach} position={[-3, 2, 3]} intensity={1.4} color="#ffab91" />
-      <pointLight ref={pink} position={[3, 1, 2]} intensity={1.2} color="#f48fb1" />
-      <pointLight position={[0, -2, -3]} intensity={0.6} color="#ff7043" />
+      <directionalLight position={[-2.5, 3, -2]} intensity={0.35} color="#ffccb8" />
+      <pointLight ref={peach} position={[-3, 2, 3]} intensity={1.2} color="#ffab91" />
+      <pointLight ref={pink} position={[3, 1, 2]} intensity={1.0} color="#f48fb1" />
+      <pointLight position={[0, -2, -3]} intensity={0.45} color="#ff7043" />
     </>
   );
 }
@@ -204,6 +317,15 @@ export function ButtScene() {
         opacity={0.55}
       />
       <BouncingButtocks />
+      <ContactShadows
+        position={[0, -1.34, 0]}
+        opacity={0.62}
+        scale={9}
+        blur={2.8}
+        far={2.4}
+        resolution={1024}
+        color="#000000"
+      />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.35, 0]} receiveShadow>
         <planeGeometry args={[20, 20]} />
         <meshStandardMaterial

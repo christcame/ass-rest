@@ -53,7 +53,7 @@ export function ButtHero() {
     <div className="hero">
       <div className="hero__canvas">
         <Canvas
-          shadows
+          shadows="soft"
           dpr={[1, 2]}
           camera={{ position: [0, 0.6, 4.2], fov: 42 }}
           gl={{ antialias: true, alpha: false }}
