@@ -2,7 +2,7 @@ import "./globals.css";
 
 export const metadata = {
   title: "ass.rest",
-  description: "ass.rest API",
+  description: "Bouncing buns in the browser. Streaming buns in the terminal.",
 };
 
 export default function RootLayout({
