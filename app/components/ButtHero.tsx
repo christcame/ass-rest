@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { ButtScene } from "./ButtScene";
-import { ThongOverlay } from "./ThongOverlay";
+
 
 const LOADING_MESSAGES = [
   "kneading the dough...",
@@ -64,8 +64,6 @@ export function ButtHero() {
           </Suspense>
         </Canvas>
       </div>
-
-      <ThongOverlay />
 
       <div className="hero__vignette" aria-hidden />
 

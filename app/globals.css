@@ -55,22 +55,10 @@ code {
   height: 100% !important;
 }
 
-.hero__thong-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .hero__thong {
-  width: clamp(52px, 7.5vw, 88px);
-  margin-top: -14vh;
-  transform-origin: center bottom;
-  animation: thong-bounce 1.25s ease-in-out infinite;
-  filter: drop-shadow(0 0 14px rgba(255, 61, 154, 0.85));
+  display: block;
+  transform-origin: center center;
+  filter: drop-shadow(0 0 16px rgba(255, 61, 154, 0.9));
 }
 
 .hero__vignette {
@@ -260,21 +248,6 @@ code {
 @keyframes bounce-ascii {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
-}
-
-@keyframes thong-bounce {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg) scaleY(1);
-  }
-  25% {
-    transform: translateY(-18px) rotate(1.2deg) scaleY(0.96);
-  }
-  50% {
-    transform: translateY(-34px) rotate(0deg) scaleY(1.04);
-  }
-  75% {
-    transform: translateY(-18px) rotate(-1.2deg) scaleY(0.96);
-  }
 }
 
 @keyframes fade-status {

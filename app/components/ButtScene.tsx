@@ -4,6 +4,7 @@ import { useRef, useMemo, useEffect, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { MeshDistortMaterial, Sparkles, Float, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
+import { ThongLayer } from "./ThongOverlay";
 
 const PEACH = "#ffc4a8";
 const PEACH_GLOW = "#ff8a65";
@@ -164,6 +165,7 @@ function BouncingButtocks() {
             <Cheek position={[0.52, 0, 0]} scale={1} colorMap={maps.colorMap} bumpMap={maps.bumpMap} />
           </>
         )}
+        <ThongLayer />
         <mesh position={[0, -0.55, 0.15]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
           <planeGeometry args={[3.6, 2.2]} />
           <shadowMaterial transparent opacity={0.35} />
