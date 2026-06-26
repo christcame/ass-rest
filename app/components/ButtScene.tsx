@@ -16,37 +16,29 @@ function thongFabric() {
     <meshStandardMaterial
       color={PINK_THONG}
       emissive={PINK_THONG_GLOW}
-      emissiveIntensity={0.28}
-      roughness={0.32}
+      emissiveIntensity={0.32}
+      roughness={0.28}
       metalness={0.04}
+      side={THREE.DoubleSide}
     />
   );
 }
 
 function PinkThong() {
+  const triangleShape = useMemo(() => {
+    const shape = new THREE.Shape();
+    shape.moveTo(0, 0.24);
+    shape.lineTo(-0.16, -0.2);
+    shape.lineTo(0.16, -0.2);
+    shape.closePath();
+    return shape;
+  }, []);
+
   return (
-    <group>
-      <mesh position={[0, 0.44, 0.6]} castShadow receiveShadow>
-        <boxGeometry args={[1.08, 0.075, 0.05]} />
-        {thongFabric()}
-      </mesh>
-      <mesh position={[0, 0.14, 0.7]} rotation={[0.22, 0, 0]} castShadow receiveShadow>
-        <boxGeometry args={[0.24, 0.2, 0.035]} />
-        {thongFabric()}
-      </mesh>
-      <mesh position={[0, 0.04, 0.46]} castShadow receiveShadow>
-        <boxGeometry args={[0.038, 0.68, 0.045]} />
-        {thongFabric()}
-      </mesh>
-      <mesh position={[-0.5, 0.3, 0.54]} rotation={[0.1, 0.15, 0.42]} castShadow receiveShadow>
-        <boxGeometry args={[0.032, 0.3, 0.032]} />
-        {thongFabric()}
-      </mesh>
-      <mesh position={[0.5, 0.3, 0.54]} rotation={[0.1, -0.15, -0.42]} castShadow receiveShadow>
-        <boxGeometry args={[0.032, 0.3, 0.032]} />
-        {thongFabric()}
-      </mesh>
-    </group>
+    <mesh position={[0, -0.02, 0.36]} castShadow receiveShadow>
+      <shapeGeometry args={[triangleShape]} />
+      {thongFabric()}
+    </mesh>
   );
 }
 
