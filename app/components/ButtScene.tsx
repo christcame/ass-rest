@@ -8,40 +8,6 @@ import * as THREE from "three";
 const PEACH = "#ffc4a8";
 const PEACH_GLOW = "#ff8a65";
 const PEACH_DEEP = "#e8917a";
-const PINK_THONG = "#ff3d9a";
-const PINK_THONG_GLOW = "#ff69b4";
-
-function thongFabric() {
-  return (
-    <meshStandardMaterial
-      color={PINK_THONG}
-      emissive={PINK_THONG_GLOW}
-      emissiveIntensity={0.32}
-      roughness={0.28}
-      metalness={0.04}
-      side={THREE.DoubleSide}
-    />
-  );
-}
-
-function PinkThong() {
-  const triangleShape = useMemo(() => {
-    const shape = new THREE.Shape();
-    shape.moveTo(0, 0.24);
-    shape.lineTo(-0.16, -0.2);
-    shape.lineTo(0.16, -0.2);
-    shape.closePath();
-    return shape;
-  }, []);
-
-  return (
-    <mesh position={[0, -0.02, 0.36]} castShadow receiveShadow>
-      <shapeGeometry args={[triangleShape]} />
-      {thongFabric()}
-    </mesh>
-  );
-}
-
 function createCrosshatchMaps() {
   const size = 512;
   const spacing = 14;
@@ -196,7 +162,6 @@ function BouncingButtocks() {
           <>
             <Cheek position={[-0.52, 0, 0]} scale={1} colorMap={maps.colorMap} bumpMap={maps.bumpMap} />
             <Cheek position={[0.52, 0, 0]} scale={1} colorMap={maps.colorMap} bumpMap={maps.bumpMap} />
-            <PinkThong />
           </>
         )}
         <mesh position={[0, -0.55, 0.15]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
